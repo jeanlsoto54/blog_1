@@ -286,6 +286,13 @@ WHERE NOT (
 );
 ```
 
-## JOINING DATA BETWEEN TABLES
+## Joining tables
+
+Now another task that we want to achieve is to include more data about the films scores in the query defined. To do it, we need to consult the next two tables:
++ ratings: Contains the overall raiting provided in the internet (have the fields `movieId` and `movie`)
++ metadata: is the current table that we are using and have the ImDB score (have the field `movie`)
++ movie: Contain the titles of the movies (have the fields `movieId` and `movie`) 
+
+A problem that we have in this case is that we can not make a direct joining between the tables metadata and ratings because there is no cardinality between them (all vs all) and also there is no a certified key (movieId) in both tables.
 
 
