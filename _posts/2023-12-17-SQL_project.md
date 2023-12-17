@@ -2,6 +2,11 @@
 
 In this post, it will be explained a practical case about a database and how with the help with SQL language can be retrieved information in a relational database.
 
+Content's table:
+
+1.TOC
+{:toc}
+
 ## About the database 
 
 The Chinook data model possess data about artists, albums, media tracks, invoices, and customers from an Apple iTunes Library. Sensitive data already had been changed and now it can be used for academical porpouses.
