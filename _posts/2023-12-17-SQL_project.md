@@ -16,6 +16,8 @@ In this first part, it is going to be check how consistent the data is. It can h
 + field defined as number that is containg text
 + characters not supported on a report and many more
 
+### Null Values
+
 At first we are going to study how the duration of the film has gone through the years. 
 For it is going to be check firstly in the table metadata that there is no null values or missing values with the commands `IS NULL` and `like ""`. 
 
@@ -52,3 +54,5 @@ SELECT movie_title, duration, title_year
 FROM movies.metadata
 WHERE movie_title IS NOT NULL AND duration <> '' AND title_year <> '';
 ```
+
+![image_database4!](/images/SQL/img4.png " ")
