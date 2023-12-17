@@ -79,3 +79,29 @@ ORDER BY Unique_values DESC;
  ```
 
  ![image_database5!](/images/SQL/img5.png " ")
+
+
+ Let's dimention how many cases of duplicated rows does the table have. For it, the next query is proposed. Also, to mention that in this query is introduced the concept of float tables with the command `WITH query_name AS ()` which let us to run inside queries in the main query that can be used in the final step of the query. 
+
+```sql
+--Create the subquery called DUPLICATES, that will have the number of duplicated rows per movie title
+ WITH DUPLICATES AS (
+-- Logic previously defined to know the number of duplicated rows
+                        SELECT movie_title, duration, title_year, director_name, COUNT(*) as Unique_values
+                        FROM movies.metadata
+                        WHERE movie_title <> '' AND duration <> '' AND title_year <> ''
+                        GROUP BY movie_title, duration, title_year, director_name
+                        HAVING Unique_values <> 1
+                        ORDER BY Unique_values DESC
+                    )
+
+SELECT 
+    -- Sum all the values of 'Unique values' for all the group of movies that have duplicated rows
+    (SELECT SUM(Unique_values) FROM DUPLICATES) / 
+    -- Sum of all the rows that the table metadata have 
+    (SELECT COUNT(*) FROM movies.metadata WHERE movie_title <> '' AND duration <> '' AND title_year <> '') * 100
+    AS Proportion_of_total_records;
+```
+Around 4.8% of all the rows present duplicate issues.
+
+![image_database6!](/images/SQL/img6.png " ")
