@@ -295,4 +295,9 @@ Now another task that we want to achieve is to include more data about the films
 
 A problem that we have in this case is that we can not make a direct joining between the tables metadata and ratings because there is no cardinality between them (all vs all) and also there is no a certified key (movieId) in both tables.
 
+To solve this issue the next steps are going to be regarded:
+1. Define the table movie as a bridge between both ratings and metadata table since is the table that have  the certified key `movieId` and the key to be created `movie`
+2. Standarize the field `movie` so it can be used as primary key
+3. Reduce the dimention of the table ratings since it have a lot of ratings per movies
+4. join all the refined tables.
 
