@@ -301,3 +301,37 @@ To solve this issue the next steps are going to be regarded:
 3. Reduce the dimention of the table ratings since it have a lot of ratings per movies
 4. join all the refined tables.
 
+
+### Standarize the primary keys
+
+In the next query is an extract on how to standarize the format of the field `movie` in movies table,
+which in this case is called as **title**.
+
+
+```sql
+-- trim: get rid off the spaces at the beginning and end of the value
+-- lower: the value is put all in minuscule 
+-- substr: the key movie in this case have the title and the year, to standarize it is being cut the last 6 characters of the field which contains the year
+SELECT lower(trim( substr(title, 1, CHAR_LENGTH(title) -6))) AS ExtractedTitle
+FROM movies.movies;
+```
+
+
+In the table metadata, when it was checked the field `movie` even though seem that only have string values, it was discovered that there is a hidden character  non ASCII in the last position of the field and is needed to adapt it.
+
+
+```sql
+SELECT lower(trim(substr(movie_title, 1, CHAR_LENGTH(movie_title) -1))) AS ExtractedTitle1
+FROM movies.metadata;
+```
+
+### Reduce dimention of the table 
+
+As was mentioned the table ratings has a lot of scoring for each film. To have only one score per movie,
+the table is reduced in dimention to only have the mean of ratings per movie. 
+
+```sql
+SELECT movieID, ROUND(AVG(rating),2) AS Average_ratings
+FROM movies.ratings
+GROUP BY movieID;
+```
