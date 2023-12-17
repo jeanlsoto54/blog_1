@@ -6,7 +6,7 @@ In this post, it will be explained a practical case about a database and how wit
 
 The Chinook data model possess data about artists, albums, media tracks, invoices, and customers from an Apple iTunes Library. Sensitive data already had been changed and now it can be used for academical porpouses.
 
-![image_database!](/images/SQL/img1.png "relational database")
+![image_database!](/images/SQL/img1.PNG "relational database")
 
 
 ## Data cleaning
@@ -29,7 +29,7 @@ For it is going to be check firstly in the table metadata that there is no null 
     WHERE movie_title IS NULL or duration like "" or title_year like "";
  ```
 
-![image_database2!](/images/SQL/img2.png "result of blank values metadata")
+![image_database2!](/images/SQL/img2.PNG "result of blank values metadata")
 
 It exist null values! So now it is going to be show the impact of the blank values in the metadata table
 
@@ -44,7 +44,7 @@ From movies.metadata;
 
  The result is that 128 (2.5%) of the rows apply to this issue.
 
-![image_database3!](/images/SQL/img3.png " ")
+![image_database3!](/images/SQL/img3.PNG " ")
 
 
 Now that the measurament about the blank values is known and we can validate that the impact is not important. We take the decision to keep out these rows on the query. It will selected the columns that are going to be used later as `movie_title`, `duration` and `title_years`
@@ -55,7 +55,7 @@ FROM movies.metadata
 WHERE movie_title IS NOT NULL AND duration <> '' AND title_year <> '';
 ```
 
-![image_database4!](/images/SQL/img4.png " ")
+![image_database4!](/images/SQL/img4.PNG " ")
 
 
 ### Duplicate Values
@@ -78,7 +78,7 @@ HAVING Unique_values <> 1
 ORDER BY Unique_values DESC;
  ```
 
- ![image_database5!](/images/SQL/img5.png " ")
+ ![image_database5!](/images/SQL/img5.PNG " ")
 
 
  Let's dimention how many cases of duplicated rows does the table have. For it, the next query is proposed. Also, to mention that in this query is introduced the concept of float tables with the command `WITH query_name AS ()` which let us to run inside queries in the main query that can be used in the final step of the query. 
@@ -104,4 +104,4 @@ SELECT
 ```
 Around 4.8% of all the rows present duplicate issues.
 
-![image_database6!](/images/SQL/img6.png " ")
+![image_database6!](/images/SQL/img6.PNG " ")
