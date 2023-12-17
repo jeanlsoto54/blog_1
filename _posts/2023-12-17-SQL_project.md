@@ -6,7 +6,7 @@ In this post, it will be explained a practical case about a database and how wit
 
 The Chinook data model possess data about artists, albums, media tracks, invoices, and customers from an Apple iTunes Library. Sensitive data already had been changed and now it can be used for academical porpouses.
 
-![image_database!](/images/SQL/img1.PNG "relational database")
+![image_database!](/images/SQL/img1.png "relational database")
 
 
 ## Data cleaning
@@ -105,3 +105,28 @@ SELECT
 Around 4.8% of all the rows present duplicate issues.
 
 ![image_database6!](/images/SQL/img6.PNG " ")
+
+
+Now, the maing query that we are using to fetch the values is needed to also take care of the duplicate values. 
+
+```sql
+
+-- RankedMovies is a query which will have an index that enumerates per group of the fields that we need to fetch   
+WITH RankedMovies AS 
+(
+        SELECT *, 
+        -- This command creates the index which has two rules:
+        --1 rule the index will happen for each group of movie_title,duration, title_year and direction different.
+        --2 rule the index will enumerate by the alphabetical order of the movie title in each group
+           ROW_NUMBER() OVER (PARTITION BY movie_title, duration, title_year, director_name ORDER BY movie_title) as Enumeration 
+        FROM movies.metadata
+        -- Filter that get rid off of the blank values
+        WHERE movie_title <> '' AND duration <> '' AND title_year <> ''
+)
+
+SELECT movie_title, duration, title_year, director_name
+--query consult on the previous query RankedMovies
+FROM RankedMovies
+-- Only will kept the rows where the index(Enumeration) is 1 (implicitly keeping only the not duplicate rows)
+WHERE Enumeration = 1;
+```
