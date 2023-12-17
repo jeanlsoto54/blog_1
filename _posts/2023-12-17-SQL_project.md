@@ -4,7 +4,7 @@ In this post, it will be explained a practical case about a database and how wit
 
 Content's table:
 
-1.TOC
+1. TOC
 {:toc}
 
 ## About the database 
@@ -285,5 +285,7 @@ WHERE NOT (
     OR content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7')
 );
 ```
+
+## JOINING DATA BETWEEN TABLES
 
 
