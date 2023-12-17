@@ -56,3 +56,26 @@ WHERE movie_title IS NOT NULL AND duration <> '' AND title_year <> '';
 ```
 
 ![image_database4!](/images/SQL/img4.png " ")
+
+
+### Duplicate Values
+
+Now that we have a dataset clean of null values, it is also necessary to check if the title of the movies, the duration of them and the year that were published present no repetition in the dataset. To catch this case, the next query is proposed on the metadata table. 
+
+ ```sql
+ -- In this line is defined the columns to fetch
+ SELECT movie_title, duration, title_year, director_name, 
+ -- 'Unique_values' is going to count the number of rows per group of duration, title year and director name
+ COUNT(*) as Unique_values
+FROM movies.metadata
+-- In the filtering section it is defined to not keep the blank values
+WHERE movie_title <> '' AND duration <> '' AND title_year <> ''
+-- since we have define a calculation field (Unique values) the data needs to be group by the descriptive fields
+GROUP BY movie_title, duration, title_year, director_name
+-- Select the groups of movie title, duration and more that have more that one row
+HAVING Unique_values <> 1
+-- sorted by the highest values of 'Unique_values'
+ORDER BY Unique_values DESC;
+ ```
+
+ ![image_database5!](/images/SQL/img5.png " ")
