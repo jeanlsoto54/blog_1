@@ -335,3 +335,71 @@ SELECT movieID, ROUND(AVG(rating),2) AS Average_ratings
 FROM movies.ratings
 GROUP BY movieID;
 ```
+
+
+### Joining the tables
+
+Now we have know how to standarize the main field that would be the primary key to permit the joins with the tables. The results that are needed for each table is now the time to create a query that can merge the desired fields in one result.
+
+The structure of this query is the next:
+
++ Rating1: Is the subquery that have the mean of the internet rating on the table ratings
++ Metadata: This subquery preprocess the table metadata with the previous steps defined on data cleaning and also is added the ImDB rating
++ Final table: generates the joining between the previous subqueries  with the help of the bridge table movie  
+
+```sql
+WITH Rating1 AS 
+(
+    SELECT movieID, ROUND(AVG(rating),2) AS Average_ratings
+    FROM movies.ratings
+    GROUP BY movieID
+), 
+Metadata AS 
+( 
+        WITH RankedMovies AS 
+        (
+            SELECT *, 
+                ROW_NUMBER() OVER (PARTITION BY movie_title, duration, title_year, director_name ORDER BY movie_title) as Enumeration 
+                FROM movies.metadata
+                WHERE movie_title <> '' AND duration <> '' AND title_year <> ''
+        )
+        ,
+        FINAL AS 
+        (
+            SELECT * FROM RankedMovies WHERE Enumeration = 1
+        )
+
+        SELECT  
+        lower(trim(substr(movie_title, 1, CHAR_LENGTH(movie_title) -1))) AS ExtractedTitle1, 
+        ROUND(AVG(imdb_score),2) AS Average_rating_per_movie
+        FROM FINAL
+        WHERE NOT (
+            title_year REGEXP '^[^0-9]+$' 
+            OR num_voted_users REGEXP '^[^0-9]+$' 
+            OR budget REGEXP '^[^0-9]+$' 
+            OR actor_3_facebook_likes REGEXP '^[^0-9]+$' 
+            OR facenumber_in_poster REGEXP '^[^0-9]+$' 
+            OR imdb_score REGEXP '^[^0-9]+$' 
+            OR num_user_for_reviews REGEXP '^[^0-9]+$' 
+            OR NOT (title_year BETWEEN 1900 AND 2023)
+            OR NOT (imdb_score BETWEEN 1 AND 10)
+            OR country REGEXP '[0-9]' 
+            OR language REGEXP '[0-9]'
+            OR country LIKE 'https%' 
+            OR language LIKE 'https%' 
+            OR content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7')
+                )
+        GROUP BY 1
+)
+
+SELECT C.ExtractedTitle1, B.Average_ratings, C.Average_rating_per_movie
+
+FROM Metadata AS C
+LEFT JOIN movies.movies AS A
+ON lower(trim( substr(A.title, 1, CHAR_LENGTH(A.title) -6))) = C.ExtractedTitle1
+LEFT JOIN Rating1 AS B
+ON A.movieId = B.movieId
+WHERE A.title is not null;
+
+```
+![image_database11!](/images/SQL/img11.PNG " ")
