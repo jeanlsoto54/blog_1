@@ -130,3 +130,25 @@ FROM RankedMovies
 -- Only will kept the rows where the index(Enumeration) is 1 (implicitly keeping only the not duplicate rows)
 WHERE Enumeration = 1;
 ```
+
+
+
+### Incongruent Data
+
+The check on the data related issues has finalized. However, is still need to do some evalution on the data by a business side standpoint. 
+The table Metadata has relevant data about views, budget, costs, released year of the movies. It is going to be revised each column if they present some incongruent data 
+
+
+```sql
+SELECT 'Duration' as field,MIN(duration) as min, MAX(duration) as max, AVG(duration) as mean FROM movies.metadata
+UNION
+SELECT 'director_facebook_likes' as field, MIN(director_facebook_likes) as min, MAX(director_facebook_likes) as min, AVG(director_facebook_likes)  as mean FROM movies.metadata
+UNION
+SELECT 'cast_total_facebook_likes' as field,MIN(cast_total_facebook_likes) as min, MAX(cast_total_facebook_likes)as min, AVG(cast_total_facebook_likes) as mean  FROM movies.metadata
+UNION
+SELECT 'title_year' as field, MIN(title_year) as min , MAX(title_year) as max, AVG(title_year) as mean FROM movies.metadata
+UNION
+SELECT 'num_voted_users' as field, MIN(num_voted_users) as min, MAX(num_voted_users) as max, AVG(num_voted_users) as mean FROM movies.metadata;
+```
+
+![image_database7!](/images/SQL/img7.PNG " ")
