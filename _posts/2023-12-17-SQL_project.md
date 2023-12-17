@@ -200,3 +200,85 @@ WHERE (
 ```
 
 ![image_database9!](/images/SQL/img9.PNG " ")
+
+
+Also, it is calculated the impact of the incongruent data that is on the table with the next query and the result
+find is that is about 8% :
+
+```sql
+SELECT 
+    (
+        SELECT COUNT(*)
+        FROM movies.metadata
+        WHERE (title_year REGEXP '^[^0-9]+$' 
+               OR duration REGEXP '^[^0-9]+$' 
+               OR num_voted_users REGEXP '^[^0-9]+$'
+               OR budget REGEXP '^[^0-9]+$' 
+               OR actor_3_facebook_likes REGEXP '^[^0-9]+$' 
+               OR facenumber_in_poster REGEXP '^[^0-9]+$' 
+               OR imdb_score REGEXP '^[^0-9]+$' 
+               OR num_user_for_reviews REGEXP '^[^0-9]+$'  
+               OR movie_imdb_link REGEXP '[^0-9]+$'
+               OR title_year NOT BETWEEN 1900 AND 2023
+               OR imdb_score NOT BETWEEN 1 AND 10
+               OR country REGEXP '[0-9]' 
+               OR language REGEXP '[0-9]' 
+               OR country LIKE "https%" 
+               OR language LIKE "https%" 
+               OR num_user_for_reviews LIKE "https%"
+               OR content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7')
+              )
+              AND movie_title <> '' 
+              AND duration <> '' 
+              AND title_year <> ''
+    ) 
+    / 
+    (SELECT COUNT(*) FROM movies.metadata WHERE movie_title <> '' AND duration <> '' AND title_year <> '') 
+    * 100 AS Proportion_of_total_records_percentage;
+```
+
+![image_database10!](/images/SQL/img10.PNG " ")
+
+
+Now that we know the dimention of the incongruent data, we are going to stack the logic to get rid off these fields,along with the blank rows and duplicates in the final query to fecth the duration of the films through the years.
+
+
+```sql
+WITH 
+-- RankedMovies has the table with index per the fields in examination and not keep the blank values
+RankedMovies AS 
+(
+    SELECT *, 
+           ROW_NUMBER() OVER (PARTITION BY movie_title, duration, title_year, director_name ORDER BY movie_title) as Enumeration 
+    FROM movies.metadata
+    WHERE movie_title <> '' AND duration <> '' AND title_year <> ''
+)
+,
+-- In FINAL query it is keep only the non duplicate values
+FINAL AS 
+(
+    SELECT * FROM RankedMovies WHERE Enumeration = 1
+)
+
+SELECT *
+FROM FINAL
+-- In this filter is taken out of the table all the incongruent cases
+WHERE NOT (
+    title_year REGEXP '^[^0-9]+$' 
+    OR num_voted_users REGEXP '^[^0-9]+$' 
+    OR budget REGEXP '^[^0-9]+$' 
+    OR actor_3_facebook_likes REGEXP '^[^0-9]+$' 
+    OR facenumber_in_poster REGEXP '^[^0-9]+$' 
+    OR imdb_score REGEXP '^[^0-9]+$' 
+    OR num_user_for_reviews REGEXP '^[^0-9]+$' 
+    OR NOT (title_year BETWEEN 1900 AND 2023)
+    OR NOT (imdb_score BETWEEN 1 AND 10)
+    OR country REGEXP '[0-9]' 
+    OR language REGEXP '[0-9]'
+    OR country LIKE 'https%' 
+    OR language LIKE 'https%' 
+    OR content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7')
+);
+```
+
+
