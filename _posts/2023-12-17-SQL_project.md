@@ -136,7 +136,9 @@ WHERE Enumeration = 1;
 ### Incongruent Data
 
 The check on the data related issues has finalized. However, is still need to do some evalution on the data by a business side standpoint. 
-The table Metadata has relevant data about views, budget, costs, released year of the movies. It is going to be revised each column if they present some incongruent data 
+The table Metadata has relevant data about views, budget, costs, released year of the movies. It is going to be revised each column if they present some incongruent data.
+
+In the next query it is being run a descriptive statistical analysis over the numerical fields
 
 
 ```sql
@@ -151,4 +153,21 @@ UNION
 SELECT 'num_voted_users' as field, MIN(num_voted_users) as min, MAX(num_voted_users) as max, AVG(num_voted_users) as mean FROM movies.metadata;
 ```
 
+The results on the image give us some concernings about some fields:
++ the field `title year` should be a numerical field but it is containing string values as 'USA'
++ the field `num_voted_users` also has the same problem
+
 ![image_database7!](/images/SQL/img7.PNG " ")
+
+
+
+Also, it is going to be check the categorical fields. In the case of  `content_rating` the next query is proposed to show if exists any other value different that the ones that the labels that the regulatory provides.
+
+```sql
+SELECT content_rating
+FROM movies.metadata
+WHERE 
+content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7');
+```
+
+![image_database8!](/images/SQL/img8.PNG " ")
