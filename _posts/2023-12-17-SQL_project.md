@@ -169,5 +169,34 @@ FROM movies.metadata
 WHERE 
 content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7');
 ```
-
+Which as we can see in the result, exists some inconsistent data:
 ![image_database8!](/images/SQL/img8.PNG " ")
+
+
+In the next query presents a summary of all the incongruent data that are in the table 
+
+```sql
+SELECT title_year, duration, gross, num_voted_users, budget,actor_3_facebook_likes,facenumber_in_poster,imdb_score, country
+,content_rating, language, num_user_for_reviews, movie_imdb_link
+FROM movies.metadata 
+WHERE ( 
+        -- Many of the numerical fields have not been defined as integer or float values. So in here  is being defined
+        -- for each numerical field is there is any string outside the range of 0 and 9
+        title_year REGEXP '^[^0-9]+$' OR duration REGEXP '^[^0-9]+$' OR num_voted_users REGEXP '^[^0-9]+$'
+        OR budget REGEXP '^[^0-9]+$' OR title_year REGEXP '^[^0-9]+$' OR actor_3_facebook_likes REGEXP '^[^0-9]+$' 
+        OR facenumber_in_poster REGEXP '^[^0-9]+$' OR imdb_score REGEXP '^[^0-9]+$' OR movie_imdb_link REGEXP '[^0-9]+$'
+        OR num_user_for_reviews REGEXP '^[^0-9]+$' OR country REGEXP '[0-9]' OR language REGEXP '[0-9]' 
+        -- Also, the movies have been create in the 20th century, if there is any case of a movie before this century should be selected
+        OR title_year NOT BETWEEN 1900 AND 2023
+        -- the ImDB scores that are outside the range of 1 and 10
+        OR imdb_score NOT BETWEEN 1 AND 10
+        -- Some categorical fields might have some https links, which is an error
+        OR country LIKE "https%" OR language LIKE "https%" OR num_user_for_reviews LIKE "https%"
+        -- Other values that do not belong to the field content_rating
+        OR content_rating NOT IN ('PG-13', 'PG', 'G', 'R', 'TV-14', 'TV-PG', 'TV-MA', 'TV-G', 'Not Rated', 'Unrated', 'TV-Y', 'TV-Y7')
+       )
+       -- take out the blank fields
+        AND movie_title <> '' AND duration <> '' AND title_year <> '';
+```
+
+![image_database9!](/images/SQL/img9.PNG " ")
