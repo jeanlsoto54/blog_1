@@ -43,3 +43,12 @@ From movies.metadata;
  The result is that 128 (2.5%) of the rows apply to this issue.
 
 ![image_database3!](/images/SQL/img3.png " ")
+
+
+Now that the measurament about the blank values is known and we can validate that the impact is not important. We take the decision to keep out these rows on the query. It will selected the columns that are going to be used later as `movie_title`, `duration` and `title_years`
+
+ ```sql
+SELECT movie_title, duration, title_year
+FROM movies.metadata
+WHERE movie_title IS NOT NULL AND duration <> '' AND title_year <> '';
+```
