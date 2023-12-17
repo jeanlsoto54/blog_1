@@ -26,3 +26,20 @@ For it is going to be check firstly in the table metadata that there is no null 
     From movies.metadata
     WHERE movie_title IS NULL or duration like "" or title_year like "";
  ```
+
+![image_database2!](/images/SQL/img2.png "result of blank values metadata")
+
+It exist null values! So now it is going to be show the impact of the blank values in the metadata table
+
+ ```sql
+ Select count(*) as Total_records, 
+--this new variable 'Total_missing_records'  will calculate how many rows are in blank
+count(CASE WHEN movie_title IS NULL OR duration LIKE "" OR title_year LIKE "" THEN movie_title end) as Total_missing_records, 
+-- 'Ratio' is going to calculate the ratio (%) of weight of missing values in the table
+count(CASE WHEN movie_title IS NULL OR duration LIKE "" OR title_year LIKE "" THEN movie_title end)/count(*) * 100 as Ratio
+From movies.metadata;
+ ```
+
+ The result is that 128 (2.5%) of the rows apply to this issue.
+
+![image_database3!](/images/SQL/img3.png " ")
